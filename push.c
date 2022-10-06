@@ -1,53 +1,37 @@
-#define GLOBALS
 #include "monty.h"
-
 /**
- * push - function that pushes an element to the stack
- * @stack: header of the stack
- * @line_number: number of line in the .m file
- * Return: nothing
- */
-
-void push(stack_t **stack, unsigned int line_number)
+ * f_push - add node to the stack
+ * @head: stack head
+ * @counter: line_number
+ * Return: no return
+*/
+void f_push(stack_t **head, unsigned int counter)
 {
-	stack_t *new, *current;
+	int n, j = 0, flag = 0;
 
-	if (gbl.num == NULL || is_a_num(gbl.num) == 0)
+	if (bus.arg)
 	{
-		dprintf(STDERR_FILENO,
-			"L%d: usage: push integer\n", line_number);
-		free_dlistint(*stack);
-		free(gbl.line);
-		free(gbl.div_line);
-		fclose(gbl.bt_code);
+		if (bus.arg[0] == '-')
+			j++;
+		for (; bus.arg[j] != '\0'; j++)
+		{
+			if (bus.arg[j] > 57 || bus.arg[j] < 48)
+				flag = 1; }
+		if (flag == 1)
+		{ fprintf(stderr, "L%d: usage: push integer\n", counter);
+			fclose(bus.file);
+			free(bus.content);
+			free_stack(*head);
+			exit(EXIT_FAILURE); }}
+	else
+	{ fprintf(stderr, "L%d: usage: push integer\n", counter);
+		fclose(bus.file);
+		free(bus.content);
+		free_stack(*head);
 		exit(EXIT_FAILURE); }
-	new = malloc(sizeof(stack_t));
-	if (new == NULL)
-	{
-		dprintf(STDERR_FILENO, "Error: malloc failed\n");
-		free_dlistint(*stack);
-		free(gbl.line);
-		free(gbl.div_line);
-		fclose(gbl.bt_code);
-		exit(EXIT_FAILURE); }
-	new->n = atoi(gbl.num);
-	if (*stack == NULL)
-	{
-		new->prev = NULL;
-		new->next = NULL;
-		*stack = new; }
-	else if (gbl.mode == 1)
-	{
-		(*stack)->prev = new;
-		new->prev = NULL;
-		new->next = *stack;
-		*stack = new; }
-	else if (gbl.mode == 0)
-	{
-		current = *stack;
-		while (current->next != NULL)
-			current = current->next;
-		new->next = NULL;
-		new->prev = current;
-		current->next = new; }
+	n = atoi(bus.arg);
+	if (bus.lifi == 0)
+		addnode(head, n);
+	else
+		addqueue(head, n);
 }
